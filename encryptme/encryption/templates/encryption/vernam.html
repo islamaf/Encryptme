@@ -1,0 +1,93 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Encryptme - Vernam{% endblock %}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'encryption/style.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <nav>
+            <ul class="nav-links">
+                <li style="float: left;">
+                    <h1>Vernam</h1>
+                </li>
+                <div class="sub-links">
+                    <li>
+                        <a href="{% url 'encryption:caesar' %}">Caesar</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'encryption:vigenere' %}">Vigenere</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'encryption:index' %}">Encryptme</a>
+                    </li>
+                </div>
+            </ul>
+        </nav>
+        {% block body %}
+        <div class="row">
+            <div class="column">
+                <form id="frm-encrypt" class="en_form">
+                    {% csrf_token %}
+                    <input type="text" name="to_encrypt" id="to_encrypt" placeholder="Type your text here"><br>
+                    <input type="text" name="key" id="key" placeholder="Key (in letters)"><br>
+                    <button type="submit" id="encrypt-btn">Encrypt</button>
+                </form>
+                <div class="result">
+                    <h2 id="res-en">{{ en_text }}</h2>
+                </div>
+            </div>
+            <div class="column">
+                <form id="frm-decrypt" class="en_form">
+                    {% csrf_token %}
+                    <input type="text" name="to_decrypt" id="to_decrypt" placeholder="Type your text here"><br>
+                    <input type="text" name="dekey" id="dekey" placeholder="Key (in letters)"><br>
+                    <button type="submit" id="decrypt-btn">Decrypt</button>
+                </form>
+                <div class="result">
+                    <h2 id="res-de">{{ en_text }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(document).on('submit', '#frm-encrypt', function(e){
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "encryption:encrypt_vernam" %}',
+                    data: {
+                        to_encrypt: $("#to_encrypt").val(),
+                        key: $("#key").val(),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        $('#res-en').html(data);
+                    }
+                });
+            });
+        </script>
+        <script type="text/javascript">
+            $(document).on('submit', '#frm-decrypt', function(e){
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "encryption:decrypt_vernam" %}',
+                    data: {
+                        to_encrypt: $("#to_decrypt").val(),
+                        key: $("#dekey").val(),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        $('#res-de').html(data);
+                    }
+                });
+            });
+        </script>
+        {% endblock %}
+    </body>
+</html>

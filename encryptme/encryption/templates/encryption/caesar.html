@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Encryptme - Caesar{% endblock %}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'encryption/style.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <nav>
+            <ul class="nav-links">
+                <li style="float: left;">
+                    <h1>Caesar</h1>
+                </li>
+                <div class="sub-links">
+                    <li>
+                        <a href="{% url 'encryption:index' %}">Encryptme</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'encryption:vigenere' %}">Vigenere</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'encryption:vernam' %}">Vernam</a>
+                    </li>
+                </div>
+            </ul>
+        </nav>
+        {% block body %}
+        <div class="row">
+            <div class="column">
+                <form id="frm-encrypt" class="en_form" autocomplete="off">
+                    {% csrf_token %}
+                    <input type="text" name="encryptsign" id="encryptsign" value="encrypt" hidden>
+                    <input type="text" name="to_encrypt" id="to_encrypt" placeholder="Type your text here" required><br>
+                    <input type="text" name="key" id="key" placeholder="Key (1-26)" required><br>
+                    <button onclick="myFunction()" type="submit" id="encrypt-btn">Encrypt</button>
+                </form>
+                <div class="result">
+                    <h2 id="res-en">{{ en_text }}</h2>
+                </div>
+            </div>
+            <div class="column">
+                <form id="frm-decrypt" class="en_form" autocomplete="off">
+                    {% csrf_token %}
+                    <input type="text" name="decryptsign" id="decryptsign" value="decrypt" hidden>
+                    <input type="text" name="to_decrypt" id="to_decrypt" placeholder="Type your encrypt" required><br>
+                    <input type="text" name="dekey" id="dekey" placeholder="Key (1-26)" required><br>
+                    <button type="submit" id="decrypt-btn">Decrypt</button>
+                </form>
+                <div class="result">
+                    <h2 id="res-de">{{ en_text }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(document).on('submit', '#frm-encrypt', function(e){
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "encryption:encrypt_decrypt_caesar" %}',
+                    data: {
+                        to_encrypt: $("#to_encrypt").val(),
+                        key: $("#key").val(),
+                        signal: $('#encryptsign').val(),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        $('#res-en').html(data);
+                    }
+                });
+            });
+        </script>
+
+        <script type="text/javascript">
+            $(document).on('submit', '#frm-decrypt', function(e){
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "encryption:encrypt_decrypt_caesar" %}',
+                    data: {
+                        to_encrypt: $("#to_decrypt").val(),
+                        key: $("#dekey").val(),
+                        signal: $('#decryptsign').val(),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        $('#res-de').html(data);
+                    }
+                });
+            });
+        </script>
+        <!-- <script>
+            function myFunction() {
+              var x, text;
+            
+              // Get the value of the input field with id="numb"
+              x = document.getElementById("key").value;
+            
+              // If x is Not a Number or less than one or greater than 10
+              if (isNaN(x) || x < 1 || x > 26) {
+                text = "Input not valid";
+                alert(text);
+              } else {
+                text = "Input OK";
+                alert(text);
+              }
+            }
+        </script> -->
+        {% endblock %}
+    </body>
+</html>

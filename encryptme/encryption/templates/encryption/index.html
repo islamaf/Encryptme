@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Encryption{% endblock %}</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'encryption/style.css' %}">
+    </head>
+    <body>
+        <nav>
+            <ul class="nav-links">
+                <li style="float: left;">
+                    <h1>Encryptme</h1>
+                </li>
+                <div class="sub-links">
+                    <li>
+                        <a href="{% url 'encryption:caesar' %}">Caesar</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'encryption:vigenere' %}">Vigenere</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'encryption:vernam' %}">Vernam</a>
+                    </li>
+                </div>
+            </ul>
+        </nav>
+        {% block body %}
+        <div class="intro">
+            <h2>Welcome to Encryptme</h2>
+            <p><i>Encryptme</i> is an encryption translator. It is able to translate to and from several ciphers which consists of:</p>
+            <ul>
+                <li>Caesar Cipher</li>
+                <li>Vernam Cipher</li>
+                <li>Vigenere Cipher</li>
+            </ul>
+            <p>Just click on any othe links on top to redirect you to the needed cipher.</p>
+        </div>
+        {% endblock %}
+    </body>
+</html>
